@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wealth Guide — Companion</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1f2430; --ink:#e8ebf0; --muted:#9aa3b2;
+    --line:#2a303c; --accent:#5b9dff; --good:#3ecf8e; --warn:#f5a623; --bad:#ff6b6b;
+    --chip:#232a36;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  header{padding:20px 22px 8px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(15,17,21,.92);backdrop-filter:blur(6px);z-index:20}
+  h1{font-size:18px;margin:0 0 2px}
+  .sub{color:var(--muted);font-size:12.5px}
+  nav{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+  nav button{background:var(--chip);color:var(--ink);border:1px solid var(--line);padding:7px 12px;border-radius:999px;font-size:13px;cursor:pointer;transition:.15s}
+  nav button:hover{border-color:var(--accent)}
+  nav button.active{background:var(--accent);border-color:var(--accent);color:#04101f;font-weight:600}
+  main{max-width:880px;margin:0 auto;padding:22px}
+  section.view{display:none;animation:f .2s ease}
+  section.view.active{display:block}
+  @keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  h2{font-size:20px;margin:4px 0 6px}
+  h3{font-size:15px;margin:20px 0 8px;color:var(--ink)}
+  p,li{font-size:14.5px}
+  .muted{color:var(--muted)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0}
+  .card2{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:680px){.grid{grid-template-columns:1fr}}
+  .pill{display:inline-block;font-size:11px;padding:2px 9px;border-radius:999px;background:var(--chip);color:var(--muted);border:1px solid var(--line);margin-right:6px}
+  .pill.good{color:var(--good);border-color:#1f5e44}
+  .pill.warn{color:var(--warn);border-color:#6b521a}
+  .pill.bad{color:var(--bad);border-color:#6b2a2a}
+  label{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 3px}
+  input,select,textarea{width:100%;background:#0c0e13;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 10px;font-size:14px;font-family:inherit}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+  button.act{background:var(--accent);color:#04101f;border:none;border-radius:8px;padding:9px 15px;font-weight:600;cursor:pointer;font-size:13.5px}
+  button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 13px;cursor:pointer;font-size:13px}
+  button.ghost:hover{border-color:var(--accent)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .metric{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+  .metric:last-child{border-bottom:none}
+  .metric .v{font-variant-numeric:tabular-nums;font-weight:600;font-size:15px}
+  .verdict{font-size:13px;font-weight:600}
+  ul.clean{list-style:none;padding:0;margin:0}
+  ul.clean li{padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
+  ul.clean li:last-child{border-bottom:none}
+  input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);margin-top:1px;flex:0 0 auto;cursor:pointer}
+  .done{color:var(--muted);text-decoration:line-through}
+  .flash{min-height:190px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;padding:26px;user-select:none}
+  .flash .q{font-size:17px;font-weight:600;max-width:600px}
+  .flash .a{font-size:14.5px;color:var(--ink);max-width:640px;margin-top:6px}
+  .flash .tap{color:var(--muted);font-size:12px;margin-top:14px}
+  .progress{height:6px;background:var(--chip);border-radius:999px;overflow:hidden;margin:8px 0 0}
+  .progress > div{height:100%;background:var(--accent);width:0;transition:.3s}
+  .kbd{font-size:11px;background:var(--chip);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600}
+  .je{font-size:13px;border-left:3px solid var(--accent);padding:8px 12px;margin:8px 0;background:var(--panel2);border-radius:0 8px 8px 0}
+  .small{font-size:12px}
+  details{margin:8px 0}
+  summary{cursor:pointer;font-weight:600;font-size:14px}
+  .save-note{font-size:11.5px;color:var(--muted)}
+  hr{border:none;border-top:1px solid var(--line);margin:18px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>📈 Wealth Guide — Companion</h1>
+  <div class="sub">Don't re-read the guide. <b>Use</b> it. Quiz yourself, run the checklist, score the deal, log the call.</div>
+  <nav id="nav"></nav>
+</header>
+<main>
+
+<!-- HOME / CHEAT SHEET -->
+<section class="view active" data-v="home">
+  <h2>Cheat Sheet & Router</h2>
+  <p class="muted">Layer 1 of the guide: the glanceable version. When something specific comes up, jump to the full section in <code>Wealth-Through-Real-Estate-and-Leverage.md</code>.</p>
+
+  <div class="card">
+    <h3 style="margin-top:0">⚡ The 6 things to internalize</h3>
+    <ul class="clean">
+      <li><span class="pill">1</span> <span><b>Engine before leverage.</b> Reserves + stable cash flow first; holding power beats equity.</span></li>
+      <li><span class="pill">2</span> <span><b>Stay under your concentration ceiling.</b> RE + leverage as a share of net worth (count home equity).</span></li>
+      <li><span class="pill">3</span> <span><b>Underwrite your own numbers</b> — never the seller's. Reassessed taxes + real insurance.</span></li>
+      <li><span class="pill">4</span> <span><b>Chase risk-adjusted return,</b> not the headline cap rate. A 9% cap is usually a C/D headache.</span></li>
+      <li><span class="pill">5</span> <span><b>Insurance is the first asset-protection layer</b> — the LLC is a backstop, and a personal guarantee bypasses it.</span></li>
+      <li><span class="pill">6</span> <span><b>Stress-test for correlated shocks,</b> not one variable at a time.</span></li>
+    </ul>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3 style="margin-top:0">🎯 Red-lines (edit yours in <b>My Numbers</b>)</h3>
+      <div class="metric"><span class="muted">Min cash-on-cash</span><span class="v" id="hl-coc">8%</span></div>
+      <div class="metric"><span class="muted">Min DSCR (at stress rate)</span><span class="v" id="hl-dscr">1.25</span></div>
+      <div class="metric"><span class="muted">Max RE+leverage / net worth</span><span class="v" id="hl-conc">55%</span></div>
+      <div class="metric"><span class="muted">Reserve floor</span><span class="v" id="hl-res">12 mo</span></div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">🧭 If you're facing… → go to</h3>
+      <ul class="clean small">
+        <li>Selling an appreciated property → <b>§21 1031, §25 reverse/installment, §26 DST/721</b></li>
+        <li>High W-2 income to shelter → <b>§22 STR strategy + cost-seg</b></li>
+        <li>Pulling cash from a property → <b>§10 HELOC/cash-out, §13 equity</b></li>
+        <li>Buying #N / new state → <b>§17 entities, §14 insurance</b></li>
+        <li>Refi/balloon coming due → <b>§19 stress test</b></li>
+        <li>Estate / passing it on → <b>§28 step-up, trusts</b></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card2">
+    <b>📅 The rhythm</b> — <span class="muted">10–15 min of self-quiz a few times a week (tapering as you learn) · run the checklist on every deal · a 30-min refresh each quarter and at tax season · log every decision. See <a href="How-To-Use-This-Guide.md">How-To-Use-This-Guide.md</a> for the full operating system.</span>
+  </div>
+</section>
+
+<!-- FLASHCARDS -->
+<section class="view" data-v="quiz">
+  <h2>Self-Quiz <span class="muted small">— retrieval practice</span></h2>
+  <p class="muted">The single most effective way to retain this. Try to answer <i>before</i> flipping. Rate honestly — "Missed" cards come back sooner. <span class="kbd">Space</span> flip · <span class="kbd">1</span> missed · <span class="kbd">2</span> got it</p>
+  <div class="row" style="margin-bottom:8px">
+    <select id="qcat" style="max-width:240px"></select>
+    <button class="ghost" id="qreset">Reset progress</button>
+    <span class="save-note" id="qstat"></span>
+  </div>
+  <div class="progress"><div id="qbar"></div></div>
+  <div class="card flash" id="flash">
+    <div class="q" id="fq">Loading…</div>
+    <div class="a" id="fa" style="display:none"></div>
+    <div class="tap" id="ftap">tap to flip</div>
+  </div>
+  <div class="row" id="frate" style="display:none;justify-content:center">
+    <button class="ghost" id="fmiss">✗ Missed</button>
+    <button class="act" id="fgot">✓ Got it</button>
+  </div>
+</section>
+
+<!-- CHECKLISTS -->
+<section class="view" data-v="checklists">
+  <h2>Checklists <span class="muted small">— point-of-decision</span></h2>
+  <p class="muted">Short by design (Gawande: a checklist isn't the manual). <b>DO-CONFIRM</b> = use judgment, then confirm nothing's missed. <b>READ-DO</b> = do each step in order. Progress saves automatically.</p>
+  <div class="row" style="margin-bottom:6px">
+    <select id="clpick"></select>
+    <button class="ghost" id="clreset">Reset this list</button>
+  </div>
+  <div class="card" id="clbox"></div>
+</section>
+
+<!-- DEAL CALCULATOR -->
+<section class="view" data-v="calc">
+  <h2>Deal Calculator <span class="muted small">— with your red-lines + stress test</span></h2>
+  <p class="muted">Quick underwrite. Verdicts use your thresholds from <b>My Numbers</b>. Educational — confirm financing and taxes before acting.</p>
+  <div class="grid">
+    <div class="card">
+      <h3 style="margin-top:0">Inputs</h3>
+      <label>Purchase price ($)</label><input type="number" id="i_price" value="300000">
+      <label>Rehab / day-one capex ($)</label><input type="number" id="i_rehab" value="0">
+      <label>Down payment (%)</label><input type="number" id="i_down" value="25">
+      <label>Interest rate (%)</label><input type="number" id="i_rate" value="7.3" step="0.01">
+      <label>Loan term (years)</label><input type="number" id="i_term" value="30">
+      <label>Gross rent — monthly ($)</label><input type="number" id="i_rent" value="2600">
+      <label>Vacancy (%)</label><input type="number" id="i_vac" value="7">
+      <label>Operating expenses — monthly ($) <span class="muted">(taxes, ins, mgmt, maint, capex…)</span></label><input type="number" id="i_opex" value="900">
+      <label>Closing + reserves out of pocket ($)</label><input type="number" id="i_close" value="9000">
+      <hr>
+      <div class="row"><b class="small">Stress test</b></div>
+      <label>Rate at refi (%) <span class="muted">— for stressed DSCR</span></label><input type="number" id="i_srate" value="8.5" step="0.01">
+      <label>Value drop (%)</label><input type="number" id="i_drop" value="25">
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Results</h3>
+      <div class="metric"><span class="muted">NOI (annual)</span><span class="v" id="o_noi">—</span></div>
+      <div class="metric"><span class="muted">Cash flow (monthly)</span><span class="v" id="o_cf">—</span></div>
+      <div class="metric"><span class="muted">Cap rate</span><span class="v" id="o_cap">—</span></div>
+      <div class="metric"><span class="muted">Cash-on-cash</span><span class="v" id="o_coc">—</span></div>
+      <div class="metric"><span class="muted">DSCR (current rate)</span><span class="v" id="o_dscr">—</span></div>
+      <div class="metric"><span class="muted">DSCR (stress rate)</span><span class="v" id="o_dscrs">—</span></div>
+      <div class="metric"><span class="muted">1% rule</span><span class="v" id="o_one">—</span></div>
+      <div class="metric"><span class="muted">Equity vs value drop</span><span class="v" id="o_eq">—</span></div>
+      <hr>
+      <h3 style="margin-top:0">Verdict</h3>
+      <div id="o_verdict"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="act" id="tojournal">Log this decision →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DECISION JOURNAL -->
+<section class="view" data-v="journal">
+  <h2>Decision Journal <span class="muted small">— the learning engine</span></h2>
+  <p class="muted">One entry per deal you act on <i>or pass on</i>, written <b>at the time</b>. Reviewing these a few times a year is how your judgment compounds and how lessons get promoted back into the guide.</p>
+  <div class="card">
+    <div class="grid">
+      <div><label>Date</label><input type="date" id="j_date"></div>
+      <div><label>Property / deal</label><input id="j_prop" placeholder="123 Main St duplex"></div>
+    </div>
+    <label>Decision</label>
+    <select id="j_dec"><option>Buy</option><option>Pass</option><option>Refinance</option><option>Sell / 1031</option><option>Other</option></select>
+    <label>Reasoning — why this call?</label><textarea id="j_why" rows="2" placeholder="Numbers, gut, what tipped it…"></textarea>
+    <label>Key assumptions (the things that must hold)</label><textarea id="j_assume" rows="2" placeholder="Rent $2,600, hold 7 yrs, refi at 8.5%…"></textarea>
+    <label>Expected outcome (so you can check yourself later)</label><textarea id="j_exp" rows="2" placeholder="~$250/mo cash flow after reserves; revisit in 12 mo"></textarea>
+    <div class="row" style="margin-top:12px">
+      <button class="act" id="j_add">Save entry</button>
+      <button class="ghost" id="j_export">Export all (Markdown)</button>
+      <span class="save-note">Saved in this browser only. Export regularly to keep a copy.</span>
+    </div>
+  </div>
+  <div id="j_list"></div>
+</section>
+
+<!-- MY NUMBERS -->
+<section class="view" data-v="numbers">
+  <h2>My Numbers <span class="muted small">— your rules, baked into the tools</span></h2>
+  <p class="muted">These drive the cheat-sheet red-lines and the calculator verdicts. Set them once; revisit at your quarterly refresh.</p>
+  <div class="card">
+    <div class="grid">
+      <div><label>Target: monthly cash flow ($) by when</label><input id="n_goal" placeholder="$8,000 / mo by 2036"></div>
+      <div><label>Stop-scaling / de-risk trigger</label><input id="n_trigger" placeholder="hit cash-flow # or age 55"></div>
+      <div><label>Min cash-on-cash to buy (%)</label><input type="number" id="n_coc" value="8"></div>
+      <div><label>Min DSCR at stress rate</label><input type="number" id="n_dscr" value="1.25" step="0.01"></div>
+      <div><label>Max RE + leverage / net worth (%)</label><input type="number" id="n_conc" value="55"></div>
+      <div><label>Reserve floor (months)</label><input type="number" id="n_res" value="12"></div>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="act" id="n_save">Save</button><span class="save-note" id="n_note"></span></div>
+  </div>
+  <div class="card2 small"><b>Why this matters (the evidence):</b> re-reading is one of the weakest ways to learn; <b>retrieval practice</b> (the self-quiz) and <b>if-then decision rules</b> (these red-lines, fired by the calculator and checklists) are what make the right move surface at the moment of decision. Memorize the <i>triggers</i>; look up the <i>math</i>.</div>
+</section>
+
+</main>
+
+<script>
+/* ---------- storage helpers ---------- */
+const K="wealthGuideCompanion_v1";
+function load(){try{return JSON.parse(localStorage.getItem(K))||{}}catch(e){return{}}}
+function save(d){localStorage.setItem(K,JSON.stringify(d))}
+let DB=load();
+DB.quiz=DB.quiz||{}; DB.checks=DB.checks||{}; DB.journal=DB.journal||[]; DB.numbers=DB.numbers||{};
+
+/* ---------- nav ---------- */
+const views=[["home","Cheat Sheet"],["quiz","Self-Quiz"],["checklists","Checklists"],["calc","Deal Calc"],["journal","Journal"],["numbers","My Numbers"]];
+const nav=document.getElementById('nav');
+views.forEach(([id,label],i)=>{const b=document.createElement('button');b.textContent=label;b.dataset.t=id;if(i===0)b.classList.add('active');b.onclick=()=>go(id);nav.appendChild(b)});
+function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.v===id));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.t===id));window.scrollTo(0,0);}
+
+/* ---------- numbers ---------- */
+const nf=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
+function applyNumbers(){
+  const n=DB.numbers;
+  document.getElementById('hl-coc').textContent=(n.coc??8)+'%';
+  document.getElementById('hl-dscr').textContent=(n.dscr??1.25);
+  document.getElementById('hl-conc').textContent=(n.conc??55)+'%';
+  document.getElementById('hl-res').textContent=(n.res??12)+' mo';
+  for(const[k,id] of [['goal','n_goal'],['trigger','n_trigger'],['coc','n_coc'],['dscr','n_dscr'],['conc','n_conc'],['res','n_res']]){
+    if(n[k]!=null)document.getElementById(id).value=n[k];}
+}
+document.getElementById('n_save').onclick=()=>{
+  DB.numbers={goal:val('n_goal'),trigger:val('n_trigger'),coc:+val('n_coc'),dscr:+val('n_dscr'),conc:+val('n_conc'),res:+val('n_res')};
+  save(DB);applyNumbers();document.getElementById('n_note').textContent='Saved ✓';setTimeout(()=>document.getElementById('n_note').textContent='',1500);calc();
+};
+const val=id=>document.getElementById(id).value;
+
+/* ---------- flashcards ---------- */
+const CARDS=[
+ ["Foundation","What is “holding power,” and why does it matter more than equity?","The ability to wait out a bad market instead of being forced to sell an illiquid asset. It comes from reserves + stable cash flow — it’s what turns a crisis into a nuisance."],
+ ["Foundation","Before any tactic, what three guardrails do you set?","A destination (target # + date + stop-scaling trigger), a concentration ceiling (RE+leverage as % of net worth, counting home equity), and a capital-sequencing waterfall."],
+ ["Foundation","Capital sequencing waterfall — what order?","1) Kill high-interest debt 2) capture the 401(k) match 3) fund reserves 4) baseline index investing 5) then a deal."],
+ ["Foundation","Where does leveraged real estate’s edge actually come from?","Not a higher unlevered return (that’s ~equity-ballpark) — it’s leverage, tax treatment, and your labor."],
+ ["Metrics","Cap rate vs. cash-on-cash — what’s each for?","Cap rate (NOI ÷ price) ignores financing — compare properties. Cash-on-cash (annual cash flow ÷ cash invested) is after the mortgage — measures YOUR return."],
+ ["Metrics","What’s a “good” cash-on-cash, and the DSCR lenders want?","Cash-on-cash ~8–12%. Lenders generally want DSCR ≥ 1.20 (1.0 = break-even)."],
+ ["Metrics","Why is a higher cap rate usually NOT a better deal?","Higher cap = higher risk (worse location, more vacancy/turnover/CapEx). A 9% cap is usually a C/D-class operational headache. Chase risk-adjusted return."],
+ ["Metrics","What does the 1% rule screen for — and what does it ignore?","Monthly rent ≥ 1% of price. It’s a quick filter, not a buy signal — it ignores taxes, insurance, vacancy, condition."],
+ ["Operating","You’re about to run screening criteria — what law just kicked in?","FCRA: permissible purpose, applicant disclosure, and an adverse-action notice if you deny/charge more based on a report."],
+ ["Operating","Fair-housing: what’s the biggest practical exposure?","What you SAY and how you screen. No preference statements in ads; screen uniformly; service/assistance animals aren’t pets (no pet fee). Apply one standard to everyone."],
+ ["Operating","Why check the eviction timeline before buying in a market?","In tenant-friendly jurisdictions a contested eviction can run 6–12 months of no rent — dwarfing the 5–10% vacancy line."],
+ ["Operating","A/B/C/D class — what does it really tell you?","Tenant quality, turnover, CapEx, and management intensity. It’s why a high cap (C/D) and a low cap (A/B) can flip on risk-adjusted return."],
+ ["Financing","Recourse vs non-recourse — and why it undercuts the LLC?","Recourse = lender can pursue you personally. Most small-investor loans are recourse with a personal guarantee — which makes the LLC shield irrelevant for that debt."],
+ ["Financing","DSCR loan — what makes it the scaling workhorse?","It qualifies on the property’s cash flow, not your personal income/DTI — so you can keep buying past the conventional 10-property wall."],
+ ["Financing","HELOC vs cash-out refi — when each?","HELOC keeps a cheap first mortgage and you pay market rate only on what you draw. Cash-out resets the whole mortgage — best for a large lump sum when your rate isn’t far below market."],
+ ["SBLOC","Borrowing against your portfolio to buy RE — the hidden risk?","Double leverage on CORRELATED assets. In a crash both fall together: a margin call forces a taxable sale at the bottom while your RE can’t refinance. Bridge-only, capped."],
+ ["SBLOC","Two hard rules on SBLOCs?","Can’t pledge retirement accounts (taxable brokerage only), and proceeds can’t buy securities. Borrow well below the max advance rate."],
+ ["BRRRR","BRRRR in one line — and the 2025–26 reality check?","Buy→Rehab→Rent→Refinance→Repeat, recycling capital via cash-out at appraised ARV. Today expect to leave ~5–10% in the deal, not zero."],
+ ["BRRRR","Mechanic’s lien — why it can make you pay twice?","An unpaid sub can lien YOUR property even after you paid the GC. Defense: lien waivers tied to every draw, plus a draw schedule (never overpay up front)."],
+ ["Insurance","Why is insurance — not the LLC — your first protection layer?","It pays the claim. A well-insured property rarely creates the catastrophic uncovered loss that pierces to your personal balance sheet. The LLC is a backstop."],
+ ["Insurance","Three coverage gaps people miss?","Flood & earthquake (excluded from standard policies), and that a normal landlord policy often VOIDS coverage on a vacant/under-rehab home — get builder’s-risk."],
+ ["Insurance","What does a personal umbrella do for a few hundred dollars?","Sits on top of auto + landlord liability ($1–5M) and does much of the practical work people imagine the LLC does."],
+ ["Entities","The one rule that makes or breaks a holding-company structure?","Never let the holding LLC own real estate or run operations — a creditor could reach the whole enterprise. Push assets/activities DOWN to property + management LLCs."],
+ ["Entities","Veil-piercing — what keeps the shield intact?","Separate bank account + EIN per entity, no commingling, adequate capitalization, a real operating agreement, sign “as Manager,” keep filings current."],
+ ["Tax","“Swap till you drop” — how does it erase tax, not just defer it?","Chain 1031 exchanges for life, then heirs get the §1014 step-up at death — the deferred gain AND depreciation recapture vanish."],
+ ["Tax","1031 deadlines?","Identify the replacement in writing within 45 days; close within 180 days (or your filing deadline, whichever is earlier). A QI must hold the cash."],
+ ["Tax","The STR strategy — how does it beat W-2 income without REPS?","If the average stay is ≤7 days AND you materially participate, the activity isn’t “passive” — cost-seg/bonus-depreciation losses offset W-2 income. No 750-hour rule."],
+ ["Tax","Depreciation recapture — the “allowed or allowable” trap?","Recapture (up to 25%) is figured on depreciation you SHOULD have taken — even if you didn’t. Keep a basis schedule and always claim it."],
+ ["Tax","NIIT — who does the 3.8% hit, and the escape?","Passive rental income + non-1031 gains when MAGI > $200k single / $250k MFJ (not indexed). Material participation/REPS makes income non-passive → NIIT-exempt."],
+ ["Tax","Estimated-tax safe harbor once income leaves W-2 withholding?","Pay 90% of this year’s tax, or 100% of last year’s (110% if prior AGI > $150k), in quarterly installments — and you’re penalty-protected."],
+ ["Tax","S-corp election — which entity, and the fatal mistake?","Only on the MANAGEMENT/operating LLC (to cut SE tax). NEVER hold appreciating real estate in an S/C-corp — you lose the step-up and trap gains."],
+ ["Estate","2026 estate exemption & annual gift exclusion?","~$15M/person ($30M/couple), 40% above it, made permanent by OBBBA. Annual gift exclusion $19,000/recipient."],
+ ["Estate","Revocable vs irrevocable trust — which do most investors need?","A revocable living trust: avoids probate, keeps the step-up — but no asset protection/estate-tax cut while alive. Irrevocable only matters above the ~$15M exemption."],
+ ["Risk","What’s wrong with a one-variable stress test?","Real downturns are correlated: values fall AND rents soften AND the refi reprices AND the SBLOC margin-calls AND a tenant stops paying — together. Model them at once."],
+ ["Risk","Why does a 25%-down property get wiped by a 25% drop?","Equity = down payment; a 25% value fall erases it entirely, and selling costs put you underwater. Leverage runs in reverse."],
+ ["Risk","Holding power — per-door or portfolio question?","Portfolio. In a correlated shock every door wants cash at once — total liquidity vs. total simultaneous drawdown, not reserves behind one property."],
+];
+let qIdx=0,qOrder=[],qCat="All";
+function buildCats(){const sel=document.getElementById('qcat');const cats=["All",...new Set(CARDS.map(c=>c[0]))];
+  sel.innerHTML=cats.map(c=>`<option>${c}</option>`).join('');sel.onchange=()=>{qCat=sel.value;startQuiz()};}
+function startQuiz(){
+  qOrder=CARDS.map((c,i)=>i).filter(i=>qCat==="All"||CARDS[i][0]===qCat);
+  // sort: missed first, then unseen, then known
+  qOrder.sort((a,b)=>score(a)-score(b));
+  qIdx=0;showCard();
+}
+function score(i){const s=DB.quiz[i];if(!s)return 1;if(s.miss>s.got)return 0;return 2+ (s.got||0);}
+function showCard(){
+  if(qOrder.length===0){document.getElementById('fq').textContent="No cards.";return;}
+  const i=qOrder[qIdx%qOrder.length];const c=CARDS[i];
+  document.getElementById('fq').textContent=c[1];
+  document.getElementById('fa').textContent=c[2];
+  document.getElementById('fa').style.display='none';
+  document.getElementById('ftap').style.display='block';
+  document.getElementById('frate').style.display='none';
+  document.getElementById('qbar').style.width=((qIdx/qOrder.length)*100)+'%';
+  const seen=Object.keys(DB.quiz).length;
+  document.getElementById('qstat').textContent=`${qOrder.length} cards in deck · ${seen} rated so far`;
+  flash.dataset.i=i;
+}
+const flash=document.getElementById('flash');
+function flip(){document.getElementById('fa').style.display='block';document.getElementById('ftap').style.display='none';document.getElementById('frate').style.display='flex';}
+flash.onclick=flip;
+function rate(good){const i=+flash.dataset.i;const s=DB.quiz[i]||{got:0,miss:0};good?s.got++:s.miss++;DB.quiz[i]=s;save(DB);qIdx++;showCard();}
+document.getElementById('fgot').onclick=e=>{e.stopPropagation();rate(true)};
+document.getElementById('fmiss').onclick=e=>{e.stopPropagation();rate(false)};
+document.getElementById('qreset').onclick=()=>{if(confirm('Reset all quiz ratings?')){DB.quiz={};save(DB);startQuiz()}};
+document.addEventListener('keydown',e=>{
+  if(document.querySelector('.view.active').dataset.v!=='quiz')return;
+  if(e.code==='Space'){e.preventDefault();flip()}
+  if(e.key==='1')rate(false);if(e.key==='2')rate(true);
+});
+
+/* ---------- checklists ---------- */
+const LISTS={
+ "Deal screening (DO-CONFIRM)":["Within my concentration ceiling (RE+leverage % of net worth)?","Underwrote with MY numbers — reassessed taxes + real insurance, not the seller’s pro forma","Cash flow positive AFTER vacancy + maintenance + CapEx reserves","Cash-on-cash ≥ my floor","DSCR ≥ my minimum at the rate I’d actually get","Property class matches the return I think I’m getting (no 9%-cap C/D surprise)","Reserves still funded after this purchase","Logged the buy/pass decision in the journal"],
+ "Pre-purchase / closing (READ-DO)":["Professional inspection ordered + sewer scope on older homes","Roof/HVAC/foundation/electrical/plumbing age + condition confirmed","Permit history pulled; pre-1978 lead/asbestos accounted for","Title search clear; estoppel certificates on any tenant-occupied units","Financing locked; recourse vs non-recourse and personal guarantee understood","Entity/titling set BEFORE closing (or due-on-sale risk cleared with lender)","Insurance bound: DP-3 + liability + loss-of-rent (+ builder’s-risk if vacant/rehab; flood/quake if exposed)","Reserves wired to the right account; closing figures match the underwrite"],
+ "Risk & leverage stress test (DO-CONFIRM)":["Run the COMBINED shock, not one variable: values −25–35% + rents soft + refi reprices + margin call + non-paying tenant","No loan maturity/balloon inside the stress window without a funded fallback","SBLOC margin call meetable WITHOUT force-selling at the bottom","Portfolio liquidity covers 12+ months of total stressed carry","Not relying on a ‘no money left in the deal’ BRRRR outcome","After a 25–35% drop I’m not forced to transact on any property"],
+ "Annual tax & entity review (DO-CONFIRM)":["Estimated taxes / safe harbor on track (110% of last year if AGI > $150k)","Cost-seg / bonus depreciation captured on eligible new properties","STR material-participation logs current (if claiming)","Per-property basis & depreciation schedules updated","Entity hygiene: separate accounts, no commingling, filings + operating agreements current","Insurance re-shopped; umbrella limit still adequate as net worth grew","Revocable trust + POA + successor managers still current","Dated figures in the guide refreshed (rates, brackets, limits); changelog bumped"],
+ "Entity decision tree (READ-DO)":["1–2 properties: a single LLC per property may be enough — keep hygiene tight","3+ properties: consider holding LLC over per-property child LLCs","Add a separate MANAGEMENT LLC for operations (S-corp election only here if fee income is large)","Holding LLC owns NO real estate and runs NO operations","Match anonymity/charging-order goals to the state of formation (WY/NV/DE) — verify BOI/state disclosure status","Confirmed due-on-sale risk before moving any mortgaged property into an LLC","Reviewed structure with a real estate attorney (not a template)"]
+};
+function buildLists(){const sel=document.getElementById('clpick');sel.innerHTML=Object.keys(LISTS).map(k=>`<option>${k}</option>`).join('');
+  sel.onchange=renderList;renderList();}
+function renderList(){
+  const name=document.getElementById('clpick').value;const items=LISTS[name];
+  DB.checks[name]=DB.checks[name]||{};
+  const box=document.getElementById('clbox');const type=name.includes('READ-DO')?'READ-DO':'DO-CONFIRM';
+  box.innerHTML=`<div style="margin-bottom:6px"><span class="pill ${type==='READ-DO'?'warn':'good'}">${type}</span><span class="muted small">${type==='READ-DO'?'Do each step in order.':'Use your judgment, then confirm nothing was missed.'}</span></div>`;
+  const ul=document.createElement('ul');ul.className='clean';
+  items.forEach((t,i)=>{const li=document.createElement('li');const cb=document.createElement('input');cb.type='checkbox';
+    cb.checked=!!DB.checks[name][i];const sp=document.createElement('span');sp.textContent=t;if(cb.checked)sp.className='done';
+    cb.onchange=()=>{DB.checks[name][i]=cb.checked;sp.className=cb.checked?'done':'';save(DB)};
+    li.appendChild(cb);li.appendChild(sp);ul.appendChild(li)});
+  box.appendChild(ul);
+}
+document.getElementById('clreset').onclick=()=>{const name=document.getElementById('clpick').value;DB.checks[name]={};save(DB);renderList()};
+
+/* ---------- calculator ---------- */
+function num(id){return parseFloat(val(id))||0}
+function pmt(rate,n,pv){if(rate===0)return pv/n;return pv*rate/(1-Math.pow(1+rate,-n))}
+function calc(){
+  const price=num('i_price'),rehab=num('i_rehab'),down=num('i_down')/100,rate=num('i_rate')/100/12,
+    term=num('i_term')*12,rent=num('i_rent'),vac=num('i_vac')/100,opex=num('i_opex'),close=num('i_close'),
+    srate=num('i_srate')/100/12,drop=num('i_drop')/100;
+  const loan=price*(1-down);
+  const egi=rent*(1-vac);                 // effective gross income monthly
+  const noiM=egi-opex;                    // monthly NOI
+  const noiA=noiM*12;
+  const mDebt=pmt(rate,term,loan);
+  const mDebtS=pmt(srate,term,loan);
+  const cfM=noiM-mDebt;
+  const cap=noiA/(price+rehab);
+  const cashIn=price*down+rehab+close;
+  const coc=(cfM*12)/cashIn;
+  const dscr=noiA/(mDebt*12);
+  const dscrS=noiA/(mDebtS*12);
+  const onePct=(rent/(price+rehab));
+  const equity=price*down;               // initial equity
+  const lossAtDrop=price*drop;           // value lost
+  const set=(id,v)=>document.getElementById(id).textContent=v;
+  set('o_noi',nf.format(noiA));
+  set('o_cf',nf.format(cfM)+'/mo');
+  set('o_cap',(cap*100).toFixed(2)+'%');
+  set('o_coc',(coc*100).toFixed(1)+'%');
+  set('o_dscr',dscr.toFixed(2));
+  set('o_dscrs',dscrS.toFixed(2));
+  set('o_one',(onePct*100).toFixed(2)+'% '+(onePct>=0.01?'✓':'✗'));
+  set('o_eq', lossAtDrop>=equity? 'wiped ✗' : nf.format(equity-lossAtDrop)+' left');
+  // verdicts
+  const n=DB.numbers;const minCoc=(n.coc??8)/100,minDscr=(n.dscr??1.25);
+  let v=[];
+  v.push(verdict('Cash flow', cfM>0, cfM>0?'positive':'NEGATIVE after expenses'));
+  v.push(verdict('Cash-on-cash', coc>=minCoc, (coc*100).toFixed(1)+'% vs your '+(minCoc*100)+'% floor'));
+  v.push(verdict('DSCR at stress rate', dscrS>=minDscr, dscrS.toFixed(2)+' vs your '+minDscr+' min'));
+  v.push(verdict('1% rule', onePct>=0.01, (onePct*100).toFixed(2)+'%'));
+  v.push(verdict('Survives '+(drop*100)+'% drop', lossAtDrop<equity, lossAtDrop<equity?'equity remains':'underwater'));
+  const pass=v.every(x=>x.ok);
+  document.getElementById('o_verdict').innerHTML=
+    `<div class="card2" style="margin-top:0"><b class="verdict" style="color:${pass?'var(--good)':'var(--bad)'}">${pass?'✓ Clears your red-lines':'✗ Fails one or more red-lines'}</b><div style="margin-top:8px">`+
+    v.map(x=>`<div class="metric"><span class="small">${x.label}</span><span class="pill ${x.ok?'good':'bad'}">${x.ok?'pass':'flag'} · ${x.note}</span></div>`).join('')+
+    `</div></div>`;
+}
+function verdict(label,ok,note){return{label,ok,note}}
+['i_price','i_rehab','i_down','i_rate','i_term','i_rent','i_vac','i_opex','i_close','i_srate','i_drop']
+  .forEach(id=>document.getElementById(id).addEventListener('input',calc));
+document.getElementById('tojournal').onclick=()=>{
+  go('journal');document.getElementById('j_date').valueAsDate=new Date();
+  document.getElementById('j_why').value='Calc: CoC '+document.getElementById('o_coc').textContent+', DSCR(stress) '+document.getElementById('o_dscrs').textContent+', CF '+document.getElementById('o_cf').textContent+'. ';
+};
+
+/* ---------- journal ---------- */
+function renderJournal(){
+  const box=document.getElementById('j_list');
+  if(!DB.journal.length){box.innerHTML='<p class="muted small">No entries yet.</p>';return;}
+  box.innerHTML='<h3>Entries ('+DB.journal.length+')</h3>'+DB.journal.slice().reverse().map((e,ri)=>{
+    const idx=DB.journal.length-1-ri;
+    return `<div class="je"><b>${e.date||''} · ${e.prop||'(deal)'} · ${e.dec}</b><br>
+      <span class="small"><b>Why:</b> ${esc(e.why)||'—'}<br><b>Assumes:</b> ${esc(e.assume)||'—'}<br><b>Expected:</b> ${esc(e.exp)||'—'}</span><br>
+      <button class="ghost small" onclick="delJ(${idx})" style="margin-top:6px">delete</button></div>`;
+  }).join('');
+}
+function esc(s){return (s||'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))}
+window.delJ=i=>{if(confirm('Delete this entry?')){DB.journal.splice(i,1);save(DB);renderJournal()}};
+document.getElementById('j_add').onclick=()=>{
+  const e={date:val('j_date'),prop:val('j_prop'),dec:val('j_dec'),why:val('j_why'),assume:val('j_assume'),exp:val('j_exp')};
+  if(!e.prop&&!e.why){alert('Add at least a property or reasoning.');return;}
+  DB.journal.push(e);save(DB);renderJournal();
+  ['j_prop','j_why','j_assume','j_exp'].forEach(id=>document.getElementById(id).value='');
+};
+document.getElementById('j_export').onclick=()=>{
+  let md='# Decision Journal\\n\\n';
+  DB.journal.forEach(e=>{md+=`## ${e.date||''} — ${e.prop||''} (${e.dec})\\n- **Why:** ${e.why||''}\\n- **Assumes:** ${e.assume||''}\\n- **Expected:** ${e.exp||''}\\n\\n`});
+  const blob=new Blob([md.replace(/\\n/g,'\n')],{type:'text/markdown'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='decision-journal.md';a.click();
+};
+
+/* ---------- init ---------- */
+buildCats();startQuiz();buildLists();applyNumbers();renderJournal();calc();
+document.getElementById('j_date').valueAsDate=new Date();
+</script>
+</body>
+</html>
