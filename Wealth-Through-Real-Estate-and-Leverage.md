@@ -16,12 +16,14 @@
 *The guide is a barbell: Part I sets the guardrails, Parts II–III & V are the engine, Part IV protects it. Read in order.*
 
 **Part I — Foundation & Strategy**
+
 1. [The Core Idea](#1-the-core-idea) — engine first, leverage second
 2. [Set Your Risk Budget](#2-set-your-risk-budget) — the brake, before any tactic
 3. [Real Estate vs. Passive Investing](#3-real-estate-vs-passive-investing) — the honest comparison
 4. [Build the Capital Engine](#4-build-the-capital-engine)
 
 **Part II — Acquiring Property**
+
 5. [House Hacking](#5-house-hacking) — the highest-ROI on-ramp
 6. [Finding Deals & Building Your Team](#6-finding-deals--building-your-team)
 7. [Evaluating a Rental Deal](#7-evaluating-a-rental-deal) — incl. due diligence & tools
@@ -29,12 +31,14 @@
 9. [Operating & Legal Compliance](#9-operating--legal-compliance)
 
 **Part III — Financing & Leverage**
+
 10. [Financing & Leverage Products](#10-financing--leverage-products)
 11. [Borrowing Against Your Portfolio](#11-borrowing-against-your-portfolio) — SBLOC / margin
 12. [The BRRRR Strategy](#12-the-brrrr-strategy) — incl. rehab & contractor management
 13. [Using Equity to Compound](#13-using-equity-to-compound)
 
 **Part IV — Protect What You Build**
+
 14. [Insurance](#14-insurance) — your first layer of protection
 15. [LLC Structuring](#15-llc-structuring)
 16. [The Limits of the LLC](#16-the-limits-of-the-llc)
@@ -44,6 +48,7 @@
 20. [Risk Checklist & Red Flags](#20-risk-checklist)
 
 **Part V — Tax Strategy**
+
 21. [Tax Strategy (Core)](#21-tax-strategy-core)
 22. [The Short-Term Rental (STR) Tax Strategy](#22-the-str-tax-strategy)
 23. [Quarterly Taxes, NIIT & Other Ongoing Items](#23-quarterly-taxes-niit)
@@ -52,10 +57,12 @@
 26. [Advanced Tax-Deferral Vehicles](#26-advanced-tax-deferral-vehicles)
 
 **Part VI — Estate & the Long Game**
+
 27. [Land as an Investment](#27-land-as-an-investment)
 28. [Estate Planning & "Buy, Borrow, Die"](#28-estate-planning--buy-borrow-die)
 
 **Part VII — Your Plan**
+
 29. [First 90 Days & Your Numbers](#29-first-90-days--your-numbers)
 30. [Sources](#sources) · [Changelog](#changelog)
 
